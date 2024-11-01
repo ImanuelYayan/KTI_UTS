@@ -1,0 +1,140 @@
+﻿@model SampleSecureWeb.ViewModels.RegistrationViewModel
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                Registration
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Message != null)
+                {
+                <div class="alert alert-success">
+                    @ViewBag.Message
+                </div>
+                }
+                <form asp-action="Register">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <input asp-for="Username" class="form-control form-control-user" placeholder="Username" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <div class="input-group">
+                            <input asp-for="Password" class="form-control form-control-user" placeholder="Password" id="password" oninput="checkPasswordStrength()" type="password" />
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password', 'eyeIcon1')">
+                                    <span id="eyeIcon1">
+                                        <!-- Eye with eyebrow SVG (visible) -->
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="2" />
+                                            <circle cx="12" cy="12" r="3" fill="currentColor" />
+                                            <path d="M4 4L20 20" stroke="none" stroke-width="0" /> <!-- Invisible line for default state -->
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <div id="password-strength" class="mt-2"></div> <!-- Password strength meter -->
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword"></label>
+                        <div class="input-group">
+                            <input asp-for="ConfirmPassword" class="form-control form-control-user" placeholder="Confirm Password" id="confirmPassword" type="password" />
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirmPassword', 'eyeIcon2')">
+                                    <span id="eyeIcon2">
+                                        <!-- Eye with eyebrow SVG (visible) -->
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="2" />
+                                            <circle cx="12" cy="12" r="3" fill="currentColor" />
+                                            <path d="M4 4L20 20" stroke="none" stroke-width="0" /> <!-- Invisible line for default state -->
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary btn-user btn-block" value="Submit" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Function to toggle password visibility
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(iconId);
+            const isPasswordVisible = passwordInput.type === 'text';
+
+            passwordInput.type = isPasswordVisible ? 'password' : 'text';
+
+            // Change the SVG icon based on the password visibility
+            eyeIcon.innerHTML = isPasswordVisible
+                ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="2" />
+                        <circle cx="12" cy="12" r="3" fill="currentColor" />
+                        <path d="M4 4L20 20" stroke="none" stroke-width="0" /> <!-- Invisible line for default state -->
+                    </svg>`
+                : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="2" />
+                        <circle cx="12" cy="12" r="3" fill="currentColor" />
+                        <path d="M4 4L20 20" stroke="currentColor" stroke-width="2" /> <!-- Eye slash for hidden state -->
+                    </svg>`;
+        }
+
+        // Function to check password strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthIndicator = document.getElementById('password-strength');
+            let strength = 0;
+
+            // Strength criteria
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[$!%*?&#]/.test(password)) strength++;
+
+            let strengthMessage;
+            let strengthColor;
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthMessage = 'Weak';
+                    strengthColor = 'red';
+                    break;
+                case 2:
+                    strengthMessage = 'Fair';
+                    strengthColor = 'orange';
+                    break;
+                case 3:
+                    strengthMessage = 'Good';
+                    strengthColor = 'blue';
+                    break;
+                case 4:
+                case 5:
+                    strengthMessage = 'Strong';
+                    strengthColor = 'green';
+                    break;
+                default:
+                    strengthMessage = '';
+                    strengthColor = '';
+            }
+
+            strengthIndicator.textContent = strengthMessage;
+            strengthIndicator.style.color = strengthColor;
+        }
+    </script>
+}

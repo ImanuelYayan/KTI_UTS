@@ -1,0 +1,74 @@
+﻿@model SampleSecureWeb.ViewModels.LoginViewModel
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                Login
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-success">
+                        @ViewBag.Message
+                    </div>
+                }
+                <form asp-action="Login">
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <input asp-for="Username" class="form-control form-control-user" placeholder="Username" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" class="form-control form-control-user" id="passwordInput" placeholder="Password" oninput="showLastCharacter()" />
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">Show/Hide</button>
+                            </div>
+
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RememberLogin" class="form-check-label">
+                            <input asp-for="RememberLogin" class="form-check-input">
+                            <strong>Remember Me</strong>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary btn-user btn-block" value="Login" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        let isPasswordVisible = false;
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            isPasswordVisible = !isPasswordVisible;
+            passwordInput.type = isPasswordVisible ? 'text' : 'password';
+        }
+
+        function showLastCharacter() {
+            const passwordInput = document.getElementById('passwordInput');
+            const length = passwordInput.value.length;
+
+            // Simpan tipe input asli
+            if (!isPasswordVisible && length > 0) {
+                passwordInput.type = 'text';
+                setTimeout(() => {
+                    passwordInput.type = 'password';
+                }, 500); // Tampilkan karakter terakhir selama 500ms
+            }
+        }
+    </script>
+}
